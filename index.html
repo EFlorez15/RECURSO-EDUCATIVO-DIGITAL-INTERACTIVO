@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto La Cubita - Entorno Virtual</title>
+    <style>
+        /* --- ESTILOS GENERALES (Estilo Moodle/Institucional) --- */
+        :root {
+            --primary-color: #2e7d32;
+            /* Verde institucional */
+            --secondary-color: #1565c0;
+            /* Azul Moodle */
+            --bg-color: #f2f2f2;
+            --box-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Barra de Navegación Superior (Simula Migaja de pan) */
+        .navbar {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb {
+            color: #666;
+        }
+
+        .breadcrumb span {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        /* Contenedor Principal */
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        /* Encabezado del Curso */
+        .course-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* --- CAJAS DE MÓDULOS --- */
+        .section-box {
+            background: var(--box-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background-color: #e8f5e9;
+            padding: 15px 20px;
+            border-left: 5px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #1b5e20;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        /* Elementos Internos */
+        .activity-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+
+        .activity-title {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Controles e Inputs */
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #0d47a1;
+        }
+
+        button.secondary {
+            background-color: #757575;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Simulación de Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ccc;
+            z-index: 0;
+        }
+
+        .timeline-point {
+            background: white;
+            border: 2px solid var(--primary-color);
+            padding: 10px;
+            border-radius: 50%;
+            z-index: 1;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Glosario Interactivo */
+        .glossary-term {
+            color: #d32f2f;
+            text-decoration: underline;
+            cursor: help;
+        }
+
+        .glossary-modal {
+            display: none;
+            background: #fff3e0;
+            border: 1px solid #ffe0b2;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* Área de Arrastrar (Zona de Juego) */
+        .map-container {
+            width: 100%;
+            height: 250px;
+            background-image: url("Captura\ de\ pantalla\ 2026-02-19\ 013053.png");
+            background-color: #e0f2f1;
+            border: 2px dashed #26a69a;
+            position: relative;
+            margin-top: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00695c;
+        }
+
+        .draggable-item {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            margin: 5px;
+            cursor: grab;
+            display: inline-block;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Collage Ofrenda */
+        .collage-area {
+            background-color: #f8f8f8;
+            border: 2px solid #ddd;
+            min-height: 150px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .collage-item {
+            width: 50px;
+            height: 50px;
+            background-color: #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* Impresión / PDF */
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            .section-box {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navegación Simulada -->
+    <div class="navbar">
+        <div class="breadcrumb">
+            Mi Moodle > Ciencias Sociales > <span>Unidad 3: Mi Vereda</span>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Encabezado -->
+        <div class="course-header">
+            <h1>El Incendio de La Cubita: Memoria y Prevención</h1>
+            <p>Actividades interactivas para trabajar en clase</p>
+        </div>
+
+        <!-- MÓDULO 1 -->
+        <div class="section-box">
+            <div class="section-header">
+                <h2>🛤️ MÓDULO 1: "El camino de La Cubita"</h2>
+                <span style="font-size: 0.8rem; color: #666;">100% Completado</span>
+            </div>
+            <div class="section-content">
+
+
+
+                <!-- Línea de tiempo -->
+                <div class="activity-item">
+                    <div class="activity-title">📅 Línea de tiempo visual</div>
+                    <div class="timeline">
+                        <div class="timeline-point">Salida<br>Sincelejo</div>
+                        <div class="timeline-point">Parada<br>Ovejas</div>
+                        <div class="timeline-point">Llegada<br>La Cubita</div>
+                    </div>
+                </div>
+
+                <!-- Reemplaza todo el contenido de una actividad por esto: -->
+                <div class="activity-item">
+                    <div class="activity-title"></div>
+
+                    <!-- Cambia el "src" por la URL de tu página o archivo -->
+                    <iframe src="pages/Módulo 1 - Actividad 1 – El camino de La Cubita.html" width="100%" height="500"
+                        style="border:none; border-radius: 8px;">
+                    </iframe>
+
+                </div>
+
+                <!-- Mapa Interactivo -->
+                <div class="activity-item">
+                    <div class="activity-title">🗺️ Actividad: "Ubica los lugares del relato"</div>
+                    <p>Arrastra los nombres al lugar correcto en el mapa:</p>
+                    <div id="source-container">
+                        <div class="draggable-item" draggable="true" id="drag1">El Río</div>
+                        <div class="draggable-item" draggable="true" id="drag2">La Loma</div>
+                        <div class="draggable-item" draggable="true" id="drag3">El Paso</div>
+                    </div>
+                    <div class="map-container" id="drop-target">
+                        Haz clic y arrastra aquí
+
+                    </div>
+                    <div style="margin-top:10px;">
+                        <button onclick="checkMap()">Verificar respuesta</button>
+                    </div>
+                </div>
+
+                <!-- Audio Narración -->
+                <div class="activity-item">
+                    <div class="activity-title">🔊 Audio-narración</div>
+                    <audio controls style="width: 100%; margin-top: 10px;">
+                        <source src="recorder/RECURSO EDUCATIVO DIGITAL INTERACTIVO.mp3" type="audio/mpeg">
+                        Tu navegador no soporta el audio.
+                    </audio>
+                </div>
+
+                <!-- Glosario -->
+                <div class="activity-item">
+                    <div class="activity-title">📖 Glosario Territorial</div>
+                    <p>Lee el texto y haz clic en las palabras subrayadas para saber su significado.</p>
+                    <p>
+                        "El incendio comenzó en la <span class="glossary-term"
+                            onclick="toggleGlossary('term1')">escollera</span> cerca del
+                        <span class="glossary-term" onclick="toggleGlossary('term2')">caimito</span>."
+                    </p>
+                    <div id="term1" class="glossary-modal">Escollera: Lugar donde el ganado pasta o descansa en
+                        pendiente.</div>
+                    <div id="term2" class="glossary-modal">Caimito: Árbol frutal de la zona.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- MÓDULO 2 -->
+        <div class="section-box">
+            <div class="section-header" style="background-color: #fff3e0; border-left-color: #ff9800;">
+                <h2>🕯️ MÓDULO 2: "Memoria y respeto"</h2>
+            </div>
+            <div class="section-content">
+
+                <div class="activity-item">
+                    <div class="activity-title">🌸 Galería Simbólica</div>
+                    <div style="display:flex; gap:10px;">
+                        <img src="https://via.placeholder.com/100/orange/white?text=Vela" alt="Vela"
+                            style="border-radius:50%;">
+
+                        <img src=" https://via.placeholder.com/100/orange/white?text=Vela" alt="Vela"
+                            style="border-radius:8px; width:80px;">
+
+                        <img src="https://placehold.co/100x100/pink/white?text=Flor" alt="Flor"
+                            style="border-radius:8px; width:80px;">
+
+                        <img src="https://placehold.co/100x100/gray/white?text=Piedra" alt="Piedra"
+                            style="border-radius:8px; width:80px;">
+                    </div>
+                </div>
+
+                <!-- Ofrenda Digital -->
+                <div class="activity-item">
+                    <div class="activity-title">🎨 Creación de "Ofrenda Digital"</div>
+                    <p>Elige elementos para tu altar conmemorativo:</p>
+                    <div style="margin-bottom: 10px;">
+                        <button class="secondary" onclick="addToCollage('🌹')">+ Flor</button>
+                        <button class="secondary" onclick="addToCollage('🕯️')">+ Vela</button>
+                        <button class="secondary" onclick="addToCollage('🪨')">+ Piedra</button>
+                        <button class="secondary" onclick="addToCollage('💧')">+ Agua</button>
+                    </div>
+                    <div class="collage-area" id="collage">
+                        <!-- Los elementos se añadirán aquí -->
+                    </div>
+                </div>
+
+                <!-- Registro Emocional -->
+                <div class="activity-item">
+                    <div class="activity-title">🎤 Registro Emocional</div>
+                    <p>Graba un audio corto (máx 30 seg) o escribe cómo te sentiste:</p>
+                    <textarea placeholder="Escribe aquí tu reflexión..." rows="3"></textarea>
+                    <div style="margin-top: 10px;">
+                        <button>🎤 Grabar Audio</button>
+                    </div>
+                </div>
+
+                <!-- Explicación Guiada -->
+                <div class="activity-item">
+                    <div class="activity-title">💡 Explicación Guiada: ¿Por qué recordamos con respeto?</div>
+                    <div
+                        style="background: #e3f2fd; padding: 10px; border-radius: 4px; border-left: 4px solid #2196f3;">
+                        <p><strong>Recuerda:</strong> Recordar es importante para que estos eventos no se olviden y
+                            aprendamos a cuidar nuestro entorno. El respeto nos ayuda a honrar a las víctimas y a la
+                            naturaleza.</p>
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-top: 10px;">
+                    <button onclick="alert('Actividad guardada en tu carpeta de usuario')">💾 Guardar en mi
+                        carpeta</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- MÓDULO 3 -->
+        <div class="section-box">
+            <div class="section-header" style="background-color: #e8eaf6; border-left-color: #3f51b5;">
+                <h2>🛡️ MÓDULO 3: "Prevención para el futuro"</h2>
+            </div>
+            <div class="section-content">
+
+                <!-- Prevención en mi vereda -->
+                <div class="activity-item">
+                    <div class="activity-title">🏡 Actividad: "Prevención en mi vereda"</div>
+                    <p>Selecciona las 3 medidas más importantes para prevenir incendios:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <label style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                            <input type="checkbox"> No hacer fogatas
+                        </label>
+                        <label style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                            <input type="checkbox"> Botar basura en la calle
+                        </label>
+                        <label style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                            <input type="checkbox"> Alertar a adultos de fuegos
+                        </label>
+                        <label style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                            <input type="checkbox"> Usar agua para apagar cigarettes
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Simulación Situación Vial / Camino -->
+                <div class="activity-item">
+                    <div class="activity-title">🚸 Simulación: "¿Qué harías en esta situación?"</div>
+                    <p><strong>Situación:</strong> Mientras caminabas al colegio, ves a unos niños jugando con un
+                        encendedor cerca de la dry grass (pasto seco).</p>
+                    <select>
+                        <option>¿Qué harías?</option>
+                        <option>No hago nada, no es mi problema.</option>
+                        <option>Les digo que es peligroso y voy a contarle a un adulto.</option>
+                        <option>Les quito el encendedor por la fuerza.</option>
+                    </select>
+                </div>
+
+                <!-- Compromiso Comunitario -->
+                <div class="activity-item">
+                    <div class="activity-title">✍️ Compromiso: "Yo cuido mi camino"</div>
+                    <p>Escribe tu promesa personal:</p>
+                    <input type="text" placeholder="Ej. Me comprometo a no tirar basura en el campo...">
+                </div>
+
+                <!-- Exportación Final -->
+                <div class="activity-item" style="background-color: #fffde7; border-color: #fbc02d;">
+                    <div class="activity-title">📚 Finalizar: "Libro de memoria del curso"</div>
+                    <p>Una vez completadas todas las actividades, genera tu libro de memoria para compartirlo con tu
+                        familia.</p>
+                    <button onclick="window.print()"
+                        style="background-color: #fbc02d; color: black; font-weight: bold;">🖨️ Generar PDF /
+                        Imprimir</button>
+                </div>
+
+            </div>
+        </div>
+
+        <footer style="text-align: center; padding: 20px; color: #666; font-size: 0.8rem;">
+            <p>Plataforma Educativa - Proyecto La Cubita &copy; 2023</p>
+        </footer>
+
+    </div>
+
+    <!-- SCRIPTS DE FUNCIONALIDAD -->
+    <script>
+        // 1. Glosario Interactivo
+        function toggleGlossary(id) {
+            var x = document.getElementById(id);
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } else {
+                x.style.display = "block";
+            }
+        }
+
+        // 2. Ofrenda Digital (Collage)
+        function addToCollage(emoji) {
+            var div = document.createElement('div');
+            div.className = 'collage-item';
+            div.innerText = emoji;
+            document.getElementById('collage').appendChild(div);
+        }
+
+        // 3. Arrastrar y Soltar (Drag & Drop simple)
+        var draggedItem = null;
+
+        document.addEventListener('dragstart', function (event) {
+            draggedItem = event.target;
+            event.target.style.opacity = '0.5';
+        });
+
+        document.addEventListener('dragend', function (event) {
+            event.target.style.opacity = '1';
+        });
+
+        document.addEventListener('dragover', function (event) {
+            event.preventDefault(); // Necesario para permitir el drop
+        });
+
+        document.addEventListener('drop', function (event) {
+            event.preventDefault();
+            var dropZone = document.getElementById('drop-target');
+
+            // Si el objetivo del drop es la zona del mapa
+            if (dropZone.contains(event.target) || event.target.id === 'drop-target') {
+                if (draggedItem) {
+                    // Clonamos el elemento para que se quede ahí
+                    var clone = draggedItem.cloneNode(true);
+                    clone.style.margin = "10px";
+                    clone.draggable = false; // Una vez soltado no se mueve más (ejemplo simple)
+                    clone.style.backgroundColor = "#fff";
+                    clone.style.border = "1px solid #2e7d32";
+                    clone.style.color = "#2e7d32";
+
+                    dropZone.appendChild(clone);
+                    draggedItem.style.display = 'none'; // Ocultamos el original de la lista
+                }
+            }
+        });
+
+        function checkMap() {
+            var mapItems = document.getElementById('drop-target').getElementsByClassName('draggable-item');
+            if (mapItems.length > 0) {
+                alert("¡Bienvenido a La Cubita! Has localizado los puntos correctamente.");
+            } else {
+                alert("Por favor, arrastra los elementos al mapa.");
+            }
+        }
+    </script>
+</body>
+
+</html>
